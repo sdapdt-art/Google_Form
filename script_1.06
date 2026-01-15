@@ -2,12 +2,12 @@
 //////////////////////////    EDA Reception v1.07      /////////////////////////////////////
 // Sunday:0   Monday:1  Tuesday:2   Wednesday:3   Thursday:4    Friday:5    Saturday:6 /////
 ////////////////////////////////////////////////////////////////////////////////////////////
-RESPONSE_COUNT = 20;
-   Week_Count = 20;
+RESPONSE_COUNT = 99999;
+   Week_Count = 99999;
 opendays = [0,1,2,3,4];
 openhour = 9;
 closehour = 15;
-islimit = true;
+islimit = false;
 
 openminute = 10;
 closeminute = 10;
