@@ -1,0 +1,308 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////    EDA Reception v1.06      /////////////////////////////////////
+// Sunday:0   Monday:1  Tuesday:2   Wednesday:3   Thursday:4    Friday:5    Saturday:6 /////
+////////////////////////////////////////////////////////////////////////////////////////////
+RESPONSE_COUNT = 20;
+   Week_Count = 20;
+opendays = [0,1,2,3,4];
+openhour = 9;
+closehour = 15;
+islimit = true;
+
+openminute = 10;
+closeminute = 10;
+softfile = true; 
+isCont = false;
+autoholidays = true;
+Days_Diff = 1;
+close1 = "الحجز مغلق الان لإكتمال العدد";
+close2 = "الحجز مغلق الأن لانتهاء الوقت المحدد للحجز";
+close3 = "الحجز مغلق الأن لوجود أجازة رسمية";
+confirm = "تم إستلام البيان بنجاح !";
+mail1 = "our official email";
+msg1="لمعرفة المستندات المطلوبة يرجى الضغط على الرابط التالي"+"\n" + "https://drive.google.com/drive/folders/1wEYdlBSWYJQX5GP4TZashYcF4o95Pn9I?usp=sharing ";
+welcome = "\n" + "------------------------------------------------------------------------------------------------------------" +"\n"+msg1+"\n"+ "For any inquiries send email to ";
+/* أيام العطلات الرسمية */
+date01 = "2020-03-26 00:00";date02 = "2018-06-03 00:00"; date03 = "2018-06-03 00:00";date04 = "2018-06-03 00:00"; date05 = "2018-06-03 00:00";date06 = "2018-06-03 00:00";
+date07 = "2018-06-03 00:00";date08 = "2018-06-03 00:00"; date09 = "2018-06-03 00:00";date10 = "2018-06-03 00:00"; date11 = "2018-06-03 00:00";date12 = "2018-06-03 00:00";
+date13 = "2018-06-03 00:00";date14 = "2018-06-03 00:00"; date15 = "2018-06-03 00:00";date16 = "2018-06-03 00:00"; date17 = "2018-06-03 00:00";date18 = "2018-06-03 00:00";
+date19 = "2018-06-03 00:00";date20 = "2018-06-03 00:00"; date21 = "2018-06-03 00:00";date22 = "2018-06-03 00:00"; date23 = "2018-06-03 00:00";date24 = "2018-06-03 00:00";
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function clearall() {
+  var triggers = ScriptApp.getProjectTriggers();  
+  for (var i in triggers) { ScriptApp.deleteTrigger(triggers[i]);}}
+
+function Initialize() {
+
+  var triggers = ScriptApp.getProjectTriggers();  
+  for (var i in triggers) { ScriptApp.deleteTrigger(triggers[i]);}  
+  var dd = new Date();  var nn = dd.getDay();
+  
+  if (isCont==false){
+      for (var i in opendays) { 
+        var target = opendays[i] - nn; if(target<0) {target = target + 7;}
+        var date00 = new Date();date00.setMinutes(openminute);date00.setSeconds(0);date00.setMilliseconds(0);date00.setHours(openhour);date00.setDate(date00.getDate() + target);
+        if(opendays[i] == nn && date00 < dd) {date00.setDate(date00.getDate()+7)}
+        ScriptApp.newTrigger("openForm")
+        .timeBased()
+        .at(date00)
+        .create()
+        .getUniqueId();   
+        
+        var date00 = new Date();date00.setMinutes(closeminute);date00.setSeconds(0);date00.setMilliseconds(0);date00.setHours(closehour);date00.setDate(date00.getDate() + target);
+        if(opendays[i] == nn && date00 < dd) {date00.setDate(date00.getDate()+7)}
+        ScriptApp.newTrigger("closeForm")
+        .timeBased()
+        .at(date00)
+        .create()
+        .getUniqueId();   
+      }
+      
+  } else if (isCont==true){
+  
+        var target = opendays[0] - nn; if(target<0) {target = target + 7;}
+        var date00 = new Date();date00.setMinutes(openminute);date00.setSeconds(0);date00.setMilliseconds(0);date00.setHours(openhour);date00.setDate(date00.getDate() + target);
+        if(opendays[0] == nn && date00 < dd) {date00.setDate(date00.getDate()+7)}
+        ScriptApp.newTrigger("openForm")
+        .timeBased()
+        .at(date00)
+        .create()
+        .getUniqueId();
+        
+        var target = opendays[(opendays.length) - 1] - nn; if(target<0) {target = target + 7;}
+        var date00 = new Date();date00.setMinutes(closeminute);date00.setSeconds(0);date00.setMilliseconds(0);date00.setHours(closehour);date00.setDate(date00.getDate() + target);
+        if(opendays[1] == nn && date00 < dd) {date00.setDate(date00.getDate()+7)}
+        ScriptApp.newTrigger("closeForm")
+        .timeBased()
+        .at(date00)
+        .create()
+        .getUniqueId();   
+  
+  }
+ 
+if (islimit==true || softfile==false){ 
+ ScriptApp.newTrigger("checkLimit")
+      .forForm(FormApp.getActiveForm())
+      .onFormSubmit()
+      .create();
+ }
+}
+
+function openForm(e) {
+  
+  var date00 = new Date();
+  date00.setMinutes(openminute);date00.setSeconds(0);date00.setMilliseconds(0);
+  date00.setDate(date00.getDate() + 7);
+ ScriptApp.newTrigger("openForm")
+  .timeBased()
+  .at(date00)
+  .create()
+  .getUniqueId();
+   
+  var form = FormApp.getActiveForm();
+  var date00 = new Date();var holiday=true;
+  date00.setHours(0);date00.setMinutes(0);date00.setSeconds(0);date00.setMilliseconds(0);
+  
+if (autoholidays==false) {
+ if ((date00.getTime() !== parseDate_(date01).getTime()) && (date00.getTime() !== parseDate_(date02).getTime()) && (date00.getTime() !== parseDate_(date03).getTime()) &&
+ (date00.getTime() !== parseDate_(date04).getTime()) && (date00.getTime() !== parseDate_(date05).getTime()) && (date00.getTime() !== parseDate_(date06).getTime()) && 
+ (date00.getTime() !== parseDate_(date07).getTime()) && (date00.getTime() !== parseDate_(date08).getTime()) && (date00.getTime() !== parseDate_(date09).getTime()) && 
+ (date00.getTime() !== parseDate_(date10).getTime()) && (date00.getTime() !== parseDate_(date11).getTime()) && (date00.getTime() !== parseDate_(date12).getTime()) && 
+ (date00.getTime() !== parseDate_(date13).getTime()) && (date00.getTime() !== parseDate_(date14).getTime()) && (date00.getTime() !== parseDate_(date15).getTime()) && 
+ (date00.getTime() !== parseDate_(date16).getTime()) && (date00.getTime() !== parseDate_(date17).getTime()) && (date00.getTime() !== parseDate_(date18).getTime()) && 
+ (date00.getTime() !== parseDate_(date19).getTime()) && (date00.getTime() !== parseDate_(date20).getTime()) && (date00.getTime() !== parseDate_(date21).getTime()) && 
+ (date00.getTime() !== parseDate_(date22).getTime()) && (date00.getTime() !== parseDate_(date23).getTime()) && (date00.getTime() !== parseDate_(date24).getTime())) {holiday=false;} 
+}
+
+else {holiday = isHoliday(date00.getFullYear(),date00.getMonth(),date00.getDate());}
+  
+if (holiday==false) {
+
+  form.deleteAllResponses();
+  var ticket = (form.getResponses().length) + 1;
+  week1 = Math.ceil(ticket/Week_Count);
+  if (week1>(RESPONSE_COUNT/Week_Count)) {week1 = (RESPONSE_COUNT/Week_Count)}
+  week1 = Days_Diff + ((week1 - 1) * 7) ;
+  var testDate = new Date();
+  var secondDate = new Date();
+  secondDate.setDate(testDate.getDate()+week1);
+  var curDate = Utilities.formatDate(secondDate, "GMT+2", "dd/MM/yyyy");
+  
+  if (softfile==true) {form.setConfirmationMessage(confirm + welcome + mail1);}
+  else {form.setConfirmationMessage("تم الحجز بنجاح - رقم الحجز : " + ticket + " - تاريخ الشباك : " + curDate + welcome + mail1);}
+
+  form.setAcceptingResponses(true);
+  //var now = new Date();
+  //MailApp.sendEmail("aymaann@gmail.com", "Inquiry B_50 Form Is Open (Time Based)", "Form Is Open Time Based" && now);
+ }
+   else {form.setCustomClosedFormMessage(close3 + date_time() + welcome + mail1);}  
+ 
+  var triggerId = e.triggerUid;
+  var triggers = ScriptApp.getProjectTriggers();   
+  for (var i in triggers) {
+  if(triggers[i].getUniqueId() == Number(triggerId)){
+  ScriptApp.deleteTrigger(triggers[i]);break;}}
+}
+
+function closeForm(e) {  
+
+  var date00 = new Date();
+  date00.setMinutes(closeminute);date00.setSeconds(0);date00.setMilliseconds(0); date00.setDate(date00.getDate() + 7);
+ ScriptApp.newTrigger("closeForm")
+  .timeBased()
+  .at(date00)
+  .create()
+  .getUniqueId();
+  
+  //var form = FormApp.getActiveForm();
+  //form.setAcceptingResponses(false);
+  //form.setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+
+  FormApp.getActiveForm().setAcceptingResponses(true); 
+  FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+  FormApp.getActiveForm().setAcceptingResponses(false);
+  FormApp.getActiveForm().deleteAllResponses();
+
+  //var now = new Date();
+  //MailApp.sendEmail("pricingcapa2018@gmail.com", "New_Files D 25 Is Closed (Time Based)", "Form Is Closed Time Based" && now);
+ 
+  var triggerId = e.triggerUid;
+  var triggers = ScriptApp.getProjectTriggers();   
+  for (var i in triggers) {
+  if(triggers[i].getUniqueId() == Number(triggerId)){
+  ScriptApp.deleteTrigger(triggers[i]);break;}}
+}
+
+
+function checkLimit() {
+  
+if (softfile==false){ 
+  var ticket = (FormApp.getActiveForm().getResponses().length) + 1;
+  week1 = Math.ceil(ticket/Week_Count);
+  if (week1>(RESPONSE_COUNT/Week_Count)) {week1 = (RESPONSE_COUNT/Week_Count)}
+  week1 = Days_Diff + ((week1 - 1) * 7) ;
+  var testDate = new Date();
+  var secondDate = new Date();
+  secondDate.setDate(testDate.getDate()+week1);
+  var curDate = Utilities.formatDate(secondDate, "GMT+2", "dd/MM/yyyy");
+  FormApp.getActiveForm().setConfirmationMessage("تم الحجز بنجاح - رقم الحجز : " + ticket + " - تاريخ الشباك : " + curDate + welcome + mail1);} 
+else {FormApp.getActiveForm().setConfirmationMessage(confirm + welcome + mail1);}
+  
+ if (islimit==true){ 
+  if (FormApp.getActiveForm().getResponses().length >= RESPONSE_COUNT ) {
+  FormApp.getActiveForm().setCustomClosedFormMessage(close1 + date_time() + welcome + mail1);
+  FormApp.getActiveForm().setAcceptingResponses(false);}
+  // RemoveDulicates();
+  /*var now = new Date();*/
+  /*MailApp.sendEmail("pricingcapa2018@gmail.com", "Inquiry B_5 Form Is Closed (Count Based)", "Inquiry B_5 Form Is Closed (Count Based)" && now);*/
+  }
+}
+
+
+function RemoveDulicates() {
+  var form = FormApp.getActiveForm();
+  var formResponses = form.getResponses();
+ 
+for (var i = 1; i < formResponses.length; i++) {
+  var formResponse = formResponses[i];
+  var itemResponses = formResponse.getItemResponses();  
+  var compName = itemResponses[1].getResponse();
+  var itemId = formResponse.getId();
+   
+ for (var y = 0; y < i; y++) {
+  var formResponse = formResponses[y];
+  var itemResponses = formResponse.getItemResponses();
+  var compName2 = itemResponses[1].getResponse();
+  var itemId2 = formResponse.getId();
+     
+     if(compName.toLowerCase() == compName2.toLowerCase()) {form.deleteResponse(itemId);}
+     //if(compName == compName2) {Logger.log(y)}
+  }
+ }
+  if (FormApp.getActiveForm().getResponses().length < RESPONSE_COUNT ) {form.setAcceptingResponses(true);}
+}
+
+/* Parse the Date for creating Time-Based Triggers */
+function parseDate_(d) {
+  return new Date(d.substr(0,4), d.substr(5,2)-1, 
+                  d.substr(8,2), d.substr(11,2), d.substr(14,2));
+}
+
+function Closed_Message() {
+  
+  const status = FormApp.getActiveForm().isAcceptingResponses();
+  FormApp.getActiveForm().setAcceptingResponses(true);
+  FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+  FormApp.getActiveForm().setAcceptingResponses(status);
+  
+  //FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+}
+
+function date_time() {
+var days = ""
+for (var i in opendays) { 
+  days = days + dayOfWeekAsString(opendays[i]) + " ";}
+var dt1 = "\n \n" + "Reservation Days: " + days + " (" + "From  " + openhour + " to  " + closehour + ") .";
+return dt1;
+}
+
+function dayOfWeekAsString(dayIndex) {
+  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dayIndex];
+}
+
+function isHoliday(year, month, day) {   
+  var startDate = new Date(year,month,day,0,0,0);
+  var endDate = new Date(year,month,day,23,59,59,999);
+  var cal=CalendarApp.getCalendarById("rpv74i8et7i5904p4vb7k4f57c@group.calendar.google.com");
+  var holidays =  cal.getEvents(startDate, endDate);
+  return holidays.length != 0; 
+}
+
+
+//////////////////////////////////////  Test  ////////////////////////////////////////////////
+
+function openForm_old() {
+  
+  var form = FormApp.getActiveForm();
+  var date00 = new Date();var holiday=true;
+  date00.setHours(0);date00.setMinutes(0);date00.setSeconds(0);date00.setMilliseconds(0);
+  
+if (autoholidays==false) {
+ if ((date00.getTime() !== parseDate_(date01).getTime()) && (date00.getTime() !== parseDate_(date02).getTime()) && (date00.getTime() !== parseDate_(date03).getTime()) &&
+ (date00.getTime() !== parseDate_(date04).getTime()) && (date00.getTime() !== parseDate_(date05).getTime()) && (date00.getTime() !== parseDate_(date06).getTime()) && 
+ (date00.getTime() !== parseDate_(date07).getTime()) && (date00.getTime() !== parseDate_(date08).getTime()) && (date00.getTime() !== parseDate_(date09).getTime()) && 
+ (date00.getTime() !== parseDate_(date10).getTime()) && (date00.getTime() !== parseDate_(date11).getTime()) && (date00.getTime() !== parseDate_(date12).getTime()) && 
+ (date00.getTime() !== parseDate_(date13).getTime()) && (date00.getTime() !== parseDate_(date14).getTime()) && (date00.getTime() !== parseDate_(date15).getTime()) && 
+ (date00.getTime() !== parseDate_(date16).getTime()) && (date00.getTime() !== parseDate_(date17).getTime()) && (date00.getTime() !== parseDate_(date18).getTime()) && 
+ (date00.getTime() !== parseDate_(date19).getTime()) && (date00.getTime() !== parseDate_(date20).getTime()) && (date00.getTime() !== parseDate_(date21).getTime()) && 
+ (date00.getTime() !== parseDate_(date22).getTime()) && (date00.getTime() !== parseDate_(date23).getTime()) && (date00.getTime() !== parseDate_(date24).getTime())) {holiday=false;} 
+}
+
+else {holiday = isHoliday(date00.getFullYear(),date00.getMonth(),date00.getDate());}
+  
+if (holiday==false) {
+
+  form.deleteAllResponses();
+  var ticket = (form.getResponses().length) + 1;
+  week1 = Math.ceil(ticket/Week_Count);
+  if (week1>(RESPONSE_COUNT/Week_Count)) {week1 = (RESPONSE_COUNT/Week_Count)}
+  week1 = Days_Diff + ((week1 - 1) * 7) ;
+  var testDate = new Date();
+  var secondDate = new Date();
+  secondDate.setDate(testDate.getDate()+week1);
+  var curDate = Utilities.formatDate(secondDate, "GMT+2", "dd/MM/yyyy");
+  
+  if (softfile==true) {form.setConfirmationMessage(confirm);}
+  else {form.setConfirmationMessage("تم الحجز بنجاح - رقم الحجز : " + ticket + " - تاريخ الشباك : " + curDate);}
+
+  form.setAcceptingResponses(true);
+  //var now = new Date();
+  //MailApp.sendEmail("aymaann@gmail.com", "Inquiry B_50 Form Is Open (Time Based)", "Form Is Open Time Based" && now);
+ }
+   else {form.setCustomClosedFormMessage(close3 + date_time() + welcome + mail1);}  
+}
+
+function isHoliday_test() {
+  var d = new Date();
+  Logger.log(isHoliday(d.getFullYear(),d.getMonth(),d.getDate())); 
+}
