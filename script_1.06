@@ -9,8 +9,8 @@ openhour = 9;
 closehour = 15;
 islimit = false;
 
-openminute = 10;
-closeminute = 10;
+openminute = 2;
+closeminute = 2;
 softfile = true; 
 isCont = false;
 autoholidays = true;
@@ -19,19 +19,15 @@ close1 = "الحجز مغلق الان لإكتمال العدد";
 close2 = "الحجز مغلق الأن لانتهاء الوقت المحدد للحجز";
 close3 = "الحجز مغلق الأن لوجود أجازة رسمية";
 confirm = "تم إستلام البيان بنجاح !";
-mail1 = "our official email";
-msg1="لمعرفة المستندات المطلوبة يرجى الضغط على الرابط التالي"+"\n" + "https://drive.google.com/drive/folders/1wEYdlBSWYJQX5GP4TZashYcF4o95Pn9I?usp=sharing ";
-welcome = "\n" + "------------------------------------------------------------------------------------------------------------" +"\n"+msg1+"\n"+ "For any inquiries send email to ";
+mail1 ="";
+welcome = "\n" + "------------------------------------------------------------------------------------------------------------" +"\n"+ +"\n"+"\n";
+
 /* أيام العطلات الرسمية */
-date01 = "2020-03-26 00:00";date02 = "2018-06-03 00:00"; date03 = "2018-06-03 00:00";date04 = "2018-06-03 00:00"; date05 = "2018-06-03 00:00";date06 = "2018-06-03 00:00";
+date01 = "2020-05-19 00:00";date02 = "2020-05-20 00:00"; date03 = "2020-05-23 00:00";date04 = "2020-05-24 00:00"; date05 = "2020-05-26 00:00";date06 = "2018-06-03 00:00";
 date07 = "2018-06-03 00:00";date08 = "2018-06-03 00:00"; date09 = "2018-06-03 00:00";date10 = "2018-06-03 00:00"; date11 = "2018-06-03 00:00";date12 = "2018-06-03 00:00";
 date13 = "2018-06-03 00:00";date14 = "2018-06-03 00:00"; date15 = "2018-06-03 00:00";date16 = "2018-06-03 00:00"; date17 = "2018-06-03 00:00";date18 = "2018-06-03 00:00";
 date19 = "2018-06-03 00:00";date20 = "2018-06-03 00:00"; date21 = "2018-06-03 00:00";date22 = "2018-06-03 00:00"; date23 = "2018-06-03 00:00";date24 = "2018-06-03 00:00";
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function clearall() {
-  var triggers = ScriptApp.getProjectTriggers();  
-  for (var i in triggers) { ScriptApp.deleteTrigger(triggers[i]);}}
-
 function Initialize() {
 
   var triggers = ScriptApp.getProjectTriggers();  
@@ -98,7 +94,7 @@ function openForm(e) {
   .at(date00)
   .create()
   .getUniqueId();
-   
+  
   var form = FormApp.getActiveForm();
   var date00 = new Date();var holiday=true;
   date00.setHours(0);date00.setMinutes(0);date00.setSeconds(0);date00.setMilliseconds(0);
@@ -118,8 +114,8 @@ else {holiday = isHoliday(date00.getFullYear(),date00.getMonth(),date00.getDate(
   
 if (holiday==false) {
 
-  form.deleteAllResponses();
-  var ticket = (form.getResponses().length) + 1;
+  // form.deleteAllResponses();
+  var ticket = (form.getResponses().length) + 69205;
   week1 = Math.ceil(ticket/Week_Count);
   if (week1>(RESPONSE_COUNT/Week_Count)) {week1 = (RESPONSE_COUNT/Week_Count)}
   week1 = Days_Diff + ((week1 - 1) * 7) ;
@@ -129,7 +125,7 @@ if (holiday==false) {
   var curDate = Utilities.formatDate(secondDate, "GMT+2", "dd/MM/yyyy");
   
   if (softfile==true) {form.setConfirmationMessage(confirm + welcome + mail1);}
-  else {form.setConfirmationMessage("تم الحجز بنجاح - رقم الحجز : " + ticket + " - تاريخ الشباك : " + curDate + welcome + mail1);}
+  else {form.setConfirmationMessage("تم استقبال البيان نجاح و رقم البيان : " + ticket + "\n" + "\n" + welcome + mail1);}
 
   form.setAcceptingResponses(true);
   //var now = new Date();
@@ -140,8 +136,9 @@ if (holiday==false) {
   var triggerId = e.triggerUid;
   var triggers = ScriptApp.getProjectTriggers();   
   for (var i in triggers) {
-  if(triggers[i].getUniqueId() == Number(triggerId)){
-  ScriptApp.deleteTrigger(triggers[i]);break;}}
+    if(triggers[i].getUniqueId() == Number(triggerId)){
+     ScriptApp.deleteTrigger(triggers[i]);break;}}
+
 }
 
 function closeForm(e) {  
@@ -154,30 +151,25 @@ function closeForm(e) {
   .create()
   .getUniqueId();
   
-  //var form = FormApp.getActiveForm();
-  //form.setAcceptingResponses(false);
-  //form.setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
-
-  FormApp.getActiveForm().setAcceptingResponses(true); 
-  FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
-  FormApp.getActiveForm().setAcceptingResponses(false);
-  FormApp.getActiveForm().deleteAllResponses();
-
+   FormApp.getActiveForm().setAcceptingResponses(true); 
+   FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+   FormApp.getActiveForm().setAcceptingResponses(false);
+  
+  if (softfile==true) {form.deleteAllResponses();}
   //var now = new Date();
   //MailApp.sendEmail("pricingcapa2018@gmail.com", "New_Files D 25 Is Closed (Time Based)", "Form Is Closed Time Based" && now);
  
   var triggerId = e.triggerUid;
   var triggers = ScriptApp.getProjectTriggers();   
   for (var i in triggers) {
-  if(triggers[i].getUniqueId() == Number(triggerId)){
-  ScriptApp.deleteTrigger(triggers[i]);break;}}
+    if(triggers[i].getUniqueId() == Number(triggerId)){
+      ScriptApp.deleteTrigger(triggers[i]);break;}}
 }
-
 
 function checkLimit() {
   
 if (softfile==false){ 
-  var ticket = (FormApp.getActiveForm().getResponses().length) + 1;
+  var ticket = (FormApp.getActiveForm().getResponses().length) + 69205;
   week1 = Math.ceil(ticket/Week_Count);
   if (week1>(RESPONSE_COUNT/Week_Count)) {week1 = (RESPONSE_COUNT/Week_Count)}
   week1 = Days_Diff + ((week1 - 1) * 7) ;
@@ -185,7 +177,7 @@ if (softfile==false){
   var secondDate = new Date();
   secondDate.setDate(testDate.getDate()+week1);
   var curDate = Utilities.formatDate(secondDate, "GMT+2", "dd/MM/yyyy");
-  FormApp.getActiveForm().setConfirmationMessage("تم الحجز بنجاح - رقم الحجز : " + ticket + " - تاريخ الشباك : " + curDate + welcome + mail1);} 
+  FormApp.getActiveForm().setConfirmationMessage("تم استقبال البيان نجاح و رقم البيان : " + ticket + "\n" + "\n" + welcome + mail1);} 
 else {FormApp.getActiveForm().setConfirmationMessage(confirm + welcome + mail1);}
   
  if (islimit==true){ 
@@ -197,7 +189,6 @@ else {FormApp.getActiveForm().setConfirmationMessage(confirm + welcome + mail1);
   /*MailApp.sendEmail("pricingcapa2018@gmail.com", "Inquiry B_5 Form Is Closed (Count Based)", "Inquiry B_5 Form Is Closed (Count Based)" && now);*/
   }
 }
-
 
 function RemoveDulicates() {
   var form = FormApp.getActiveForm();
@@ -229,20 +220,17 @@ function parseDate_(d) {
 }
 
 function Closed_Message() {
-  
-  const status = FormApp.getActiveForm().isAcceptingResponses();
-  FormApp.getActiveForm().setAcceptingResponses(true);
-  FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
-  FormApp.getActiveForm().setAcceptingResponses(status);
-  
-  //FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+const status = FormApp.getActiveForm().isAcceptingResponses();
+FormApp.getActiveForm().setAcceptingResponses(true);
+FormApp.getActiveForm().setCustomClosedFormMessage(close2 + date_time() + welcome + mail1);
+FormApp.getActiveForm().setAcceptingResponses(status);
 }
 
 function date_time() {
 var days = ""
 for (var i in opendays) { 
   days = days + dayOfWeekAsString(opendays[i]) + " ";}
-var dt1 = "\n \n" + "Reservation Days: " + days + " (" + "From  " + openhour + " to  " + closehour + ") .";
+var dt1 = "\n \n" + "Submission Days: " + days + " (" + "From  " + openhour + " to  " + closehour + ") .";
 return dt1;
 }
 
@@ -257,7 +245,6 @@ function isHoliday(year, month, day) {
   var holidays =  cal.getEvents(startDate, endDate);
   return holidays.length != 0; 
 }
-
 
 //////////////////////////////////////  Test  ////////////////////////////////////////////////
 
@@ -282,7 +269,7 @@ else {holiday = isHoliday(date00.getFullYear(),date00.getMonth(),date00.getDate(
   
 if (holiday==false) {
 
-  form.deleteAllResponses();
+  // form.deleteAllResponses();
   var ticket = (form.getResponses().length) + 1;
   week1 = Math.ceil(ticket/Week_Count);
   if (week1>(RESPONSE_COUNT/Week_Count)) {week1 = (RESPONSE_COUNT/Week_Count)}
